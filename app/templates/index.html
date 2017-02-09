@@ -1,31 +1,122 @@
 <!DOCTYPE html>
 
 <html>
+
 <head>
     <title>WatchVictis</title>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <link rel="stylesheet" href="static/css/style.css">
+    <style>
+    @font-face {
+        font-family: 'Adam';
+        /*src: local('ADAM.CG PRO'), url(../font/adam.woff2) format('woff2'), url(../font/adam.woff) format('woff');*/
+        src: local('ADAM.CG PRO'), url(static/font/adam.woff2) format('woff2'), url(static/font/adam.woff) format('woff');
+        unicode-range: U+0000-00FF;
+    }
+    @font-face {
+        font-family: 'Roboto';
+        font-weight: 300;
+        src: local('Roboto Light'), local('Roboto-Light');
+        /*src: url(../font/roboto.woff2) format('woff2');*/
+        src: url(static/font/roboto.woff2) format('woff2');
+        unicode-range: U+0000-00FF;
+    }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body {
+        background: #333;
+        color: white;
+        font-family: 'Roboto', sans-serif;
+    }
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-family: 'Adam', 'Roboto', sans-serif;
+    }
+    body > * {
+        position: absolute;
+        padding: 20px;
+    }
+    header {
+        padding: 0;
+        width: 50vw;
+        height: 20vh;
+        top: 0;
+        left: 0;
+    }
+    header > * {
+        display: inline-block;
+    }
+    #logo {
+        height: 17vh;
+        margin-top: 0vh;
+        margin-left: 20px;
+        float: left;
+    }
+    header div {
+        margin-top: 30px;
+    }
+    #matches-pane {
+        width: 50vw;
+        height: 80vh;
+        top: 20vh;
+        left: 0;
+    }
+    #stream {
+        width: 50vw;
+        height: 50vh;
+        top: 50vh;
+        left: 50vw;
+    }
+    /* TODO: Remove log. Just for debugging ATM. */
+    #log {
+        position: absolute;
+        top: 100vh;
+    }
+
+    </style>
 </head>
+
 <body>
     <header>
-        <img src="static/img/logo.svg">
-        <h1>WatchVictis</h1>
-        <div id=""
+        <img src="static/img/logo.svg" id="logo">
+        <div>
+            <h1>WatchVictis</h1>
+            <select id="event-selector">
+                <option>No events found.</option>
+            </select>
+        </div>
     </header>
-    <div id="log"></div>
-    <form id="emit">
-        <input type="text" id="emit_data" placeholder="Type here">
-        <input type="submit" value="Emit">
-    </form>
+    <aside id="matches-pane">
+        <ul id="matches-list">
+            <li>No matches found.</li>
+        </ul>
+    </aside>
+    <aside id="stream">
+        <p>No stream found.</p>
+    </aside>
+    <div id="log">
+        <form id="emit">
+            <input type="text" id="emit_data" placeholder="Type here">
+            <input type="submit" value="Emit">
+        </form>
+    </div>
     <script>
         var socket = io.connect('http://' + document.domain + ':' + location.port + '/req');
         socket.addEventListener('response', function(data) {
-            document.getElementById('log').innerHTML += '<p>Received: ' + data + '</p>';
+            document.getElementById('log').innerHTML += '<p>Received: ' + JSON.stringify(data) + '</p>';
         });
         document.querySelector('form#emit').onsubmit = function(event) {
-            socket.emit('event', {data: document.getElementById('emit_data').value});
+            socket.emit('data', {
+                data: document.getElementById('emit_data').value
+            });
             return false;
         };
     </script>
 </body>
+
 </html>

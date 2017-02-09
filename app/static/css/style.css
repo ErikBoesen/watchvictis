@@ -1,0 +1,68 @@
+@font-face {
+    font-family: 'Adam';
+    src: local('ADAM.CG PRO'), url(../font/adam.woff2) format('woff2'), url(../font/adam.woff) format('woff');
+    unicode-range: U+0000-00FF;
+}
+@font-face {
+    font-family: 'Roboto';
+    font-weight: 300;
+    src: local('Roboto Light'), local('Roboto-Light');
+    src: url(../font/roboto.woff2) format('woff2');
+    unicode-range: U+0000-00FF;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    background: #333;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+}
+h1,
+h2,
+h3,
+h4 {
+    font-family: 'Adam', 'Roboto', sans-serif;
+}
+body > * {
+    position: absolute;
+    padding: 20px;
+}
+header {
+    padding: 0;
+    width: 50vw;
+    height: 20vh;
+    top: 0;
+    left: 0;
+}
+header > * {
+    display: inline-block;
+}
+#logo {
+    height: 17vh;
+    margin-top: 0vh;
+    margin-left: 20px;
+    float: left;
+}
+header div {
+    margin-top: 30px;
+}
+#matches-pane {
+    width: 50vw;
+    height: 80vh;
+    top: 20vh;
+    left: 0;
+}
+#stream {
+    width: 50vw;
+    height: 50vh;
+    top: 50vh;
+    left: 50vw;
+}
+/* TODO: Remove log. Just for debugging ATM. */
+#log {
+    position: absolute;
+    top: 100vh;
+}
