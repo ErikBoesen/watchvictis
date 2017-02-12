@@ -130,26 +130,17 @@
         socket.addEventListener('data', function(data) {
             console.log(data);
 
-            while (ui.matchesList.hasChildNodes()) {
-                ui.matchesList.removeChild(ui.matchesList.lastChild);
-            }
+            ui.matchesList.innerHTML = '';
+
             for (i = 0; i < data.matches.length; i++) {
                 row = document.createElement('tr');
-                alliances = {
-                    red: [],
-                    blue: []
-                }
-                for (j = 0; j < 3; j++) {
-                    alliances.red[j] = data.matches[i].alliances.red.teams[j].substring(3, data.matches[i].alliances.red.teams[j].length);
-                    alliances.blue[j] = data.matches[i].alliances.blue.teams[j].substring(3, data.matches[i].alliances.blue.teams[j].length);
-                }
                 row.innerHTML = '<td>' + data.matches[i].comp_level.toUpperCase() + data.matches[i].match_number + '</td>' +
-                                '<td>' + alliances.red[0] + ', ' +
-                                         alliances.red[1] + ', ' +
-                                         alliances.red[2] + '</td>' +
-                                '<td>' + alliances.blue[0] + ', ' +
-                                         alliances.blue[1] + ', ' +
-                                         alliances.blue[2] + '</td>';
+                                '<td>' + data.matches[i].teams.red[0] + ', ' +
+                                         data.matches[i].teams.red[1] + ', ' +
+                                         data.matches[i].teams.red[2] + '</td>' +
+                                '<td>' + data.matches[i].teams.blue[0] + ', ' +
+                                         data.matches[i].teams.blue[1] + ', ' +
+                                         data.matches[i].teams.blue[2] + '</td>';
                 ui.matchesList.appendChild(row);
             }
 

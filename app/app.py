@@ -17,6 +17,8 @@ TEAM = 1418
 
 tba = tbapy.TBA('%s:watchvictis:0.1' % TEAM)
 
+current_data = None
+
 
 def get_tba_data(debug=False):
     """
@@ -37,20 +39,34 @@ def get_tba_data(debug=False):
                 data = i
                 break
     if data is not {}:
-        data['matches'] = sorted(tba.team_matches(TEAM, data['key']), key=lambda match: (['qm', 'qf', 'sf', 'f'].index(match['comp_level']), match['match_number']))
-    # We're sending a ton of data that isn't used. TODO: Clean up.
+        matches = sorted(tba.team_matches(TEAM, data['key']), key=lambda match: (['qm', 'qf', 'sf', 'f'].index(match['comp_level']), match['match_number']))
+        for i in range(0, len(matches)):
+            matches[i] = {
+                'comp_level': matches[i]['comp_level'],
+                'match_number': matches[i]['match_number'],
+                'teams': {
+                    'red':  list(map(lambda key: key[3:], matches[i]['alliances']['red']['teams'])),
+                    'blue': list(map(lambda key: key[3:], matches[i]['alliances']['blue']['teams']))
+                }
+            }
+            data = {
+                'matches': matches,
+                'webcast': data['webcast'],
+            }
     return data
 
 
 def background_thread():
     """Example of how to send server generated events to clients."""
     count = 0
+    global current_data
     while True:
         count += 1
+        current_data = get_tba_data(True)
         socketio.emit('data',
-                      get_tba_data(True),
+                      current_data,
                       namespace='/req')
-        socketio.sleep(20)
+        socketio.sleep(30)
 
 
 @app.route('/')
@@ -63,9 +79,10 @@ def connect():
     global thread
     # Prevent opening of multiple threads at one time.
     # This is annoying for the end-user, but we don't want to be fetching redundant TBA data for every single person viewing the app.
+
     if thread is None:
         thread = socketio.start_background_task(target=background_thread)
-    emit('response', {'data': 'Connected'})
+    emit('data', current_data)
 
 @socketio.on('disconnect', namespace='/req')
 def disconnect():
