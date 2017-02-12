@@ -31,14 +31,13 @@ def get_tba_data(debug=False):
         data = {}
         now = datetime.now()
         for i in tba.team_events(TEAM, now.year):
-            print(json.dumps(i))
             start = list(map(int, i['start_date'].split('-')))
             end = list(map(int, i['end_date'].split('-')))
             if datetime(start[0], start[1], start[2]) < now and now < datetime(end[0], end[1], end[2]):
                 data = i
                 break
     if data is not {}:
-        data['matches'] = sorted(tba.team_matches(TEAM, data['key']), key=lambda match: (['qm', 'qf', 'sf', 'f'].index(match.comp_level), match.match_number))
+        data['matches'] = sorted(tba.team_matches(TEAM, data['key']), key=lambda match: (['qm', 'qf', 'sf', 'f'].index(match['comp_level']), match['match_number']))
     # We're sending a ton of data that isn't used. TODO: Clean up.
     return data
 

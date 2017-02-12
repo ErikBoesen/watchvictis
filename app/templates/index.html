@@ -53,24 +53,38 @@
     }
     #logo {
         height: 17vh;
-        margin-top: 0vh;
+        margin-top: 2vh;
         margin-left: 20px;
         float: left;
     }
     header div {
-        margin-top: 30px;
+        margin-left: 10px;
+        margin-top: 40px;
     }
     #matches-pane {
-        width: 50vw;
+        width: 40vw;
         height: 80vh;
         top: 20vh;
         left: 0;
     }
+    table {
+        border-collapse: collapse;
+    }
+    td {
+        border: solid 1px #666;
+        padding: 4px;
+    }
     #stream {
-        width: 50vw;
-        height: 50vh;
-        top: 50vh;
-        left: 50vw;
+        width: 60vw;
+        height: 70vh;
+        top: 30vh;
+        left: 40vw;
+        padding: 0;
+    }
+    #stream iframe {
+        border: 0;
+        width: 100%;
+        height: 100%;
     }
 
     </style>
@@ -88,8 +102,15 @@
     </header>
     <aside id="matches-pane">
         <table>
+            <thead>
+                <tr>
+                    <th>Match</th>
+                    <th>Red alliance</th>
+                    <th>Blue alliance</th>
+                </tr>
+            </thead>
             <tbody id="matches-list">
-                <tr>No matches found.</tr>
+                <tr><td>No matches found.</td></tr>
             </tbody>
         </table>
     </aside>
@@ -100,7 +121,8 @@
         var socket = io.connect('http://' + document.domain + ':' + location.port + '/req');
 
         var ui = {
-            matchesList: document.getElementById('matches-list')
+            matchesList: document.getElementById('matches-list'),
+            stream: document.getElementById('stream')
         }
         socket.addEventListener('response', function(data) {
             console.log(data);
@@ -109,14 +131,36 @@
             console.log(data);
 
             while (ui.matchesList.hasChildNodes()) {
-                ui.matchesList.removeChild(ui.matchesList.firstChild);
+                ui.matchesList.removeChild(ui.matchesList.lastChild);
             }
-            for (i in data.matches) { //= 0; i < data.matches.length; i++) {
+            for (i = 0; i < data.matches.length; i++) {
                 row = document.createElement('tr');
-                row.innerHTML = '<td>' + i.match_number + '</td>';
+                alliances = {
+                    red: [],
+                    blue: []
+                }
+                for (j = 0; j < 3; j++) {
+                    alliances.red[j] = data.matches[i].alliances.red.teams[j].substring(3, data.matches[i].alliances.red.teams[j].length);
+                    alliances.blue[j] = data.matches[i].alliances.blue.teams[j].substring(3, data.matches[i].alliances.blue.teams[j].length);
+                }
+                row.innerHTML = '<td>' + data.matches[i].comp_level.toUpperCase() + data.matches[i].match_number + '</td>' +
+                                '<td>' + alliances.red[0] + ', ' +
+                                         alliances.red[1] + ', ' +
+                                         alliances.red[2] + '</td>' +
+                                '<td>' + alliances.blue[0] + ', ' +
+                                         alliances.blue[1] + ', ' +
+                                         alliances.blue[2] + '</td>';
                 ui.matchesList.appendChild(row);
             }
 
+            // Only replace the stream contents if there's not one there already.
+            // Otherwise, it will delete the stream and restart even if it's being watched.
+            if (!document.querySelector('#stream iframe')) {
+                if (data.webcast[0].type = 'twitch') {
+                    ui.stream.innerHTML =
+                        '<iframe src="http://player.twitch.tv/?' + ((data.webcast[0].file) ? 'video=v'  + data.webcast[0].file : 'channel=' + data.webcast[0].channel) + '" scrolling="no" allowfullscreen="true"></iframe>';
+                }
+            }
         });
     </script>
 </body>
