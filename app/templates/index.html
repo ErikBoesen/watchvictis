@@ -6,88 +6,6 @@
     <title>WatchVictis</title>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <link rel="stylesheet" href="static/css/style.css">
-    <style>
-    @font-face {
-        font-family: 'Adam';
-        /*src: local('ADAM.CG PRO'), url(../font/adam.woff2) format('woff2'), url(../font/adam.woff) format('woff');*/
-        src: local('ADAM.CG PRO'), url(static/font/adam.woff2) format('woff2'), url(static/font/adam.woff) format('woff');
-        unicode-range: U+0000-00FF;
-    }
-    @font-face {
-        font-family: 'Roboto';
-        font-weight: 300;
-        src: local('Roboto Light'), local('Roboto-Light');
-        /*src: url(../font/roboto.woff2) format('woff2');*/
-        src: url(static/font/roboto.woff2) format('woff2');
-        unicode-range: U+0000-00FF;
-    }
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    body {
-        background: #333;
-        color: white;
-        font-family: 'Roboto', sans-serif;
-    }
-    h1,
-    h2,
-    h3,
-    h4 {
-        font-family: 'Adam', 'Roboto', sans-serif;
-    }
-    body > * {
-        position: absolute;
-        padding: 20px;
-    }
-    header {
-        padding: 0;
-        width: 50vw;
-        height: 20vh;
-        top: 0;
-        left: 0;
-    }
-    header > * {
-        display: inline-block;
-    }
-    #logo {
-        height: 17vh;
-        margin-top: 2vh;
-        margin-left: 20px;
-        float: left;
-    }
-    header div {
-        margin-left: 10px;
-        margin-top: 40px;
-    }
-    #matches-pane {
-        width: 40vw;
-        height: 80vh;
-        top: 20vh;
-        left: 0;
-    }
-    table {
-        border-collapse: collapse;
-    }
-    td {
-        border: solid 1px #666;
-        padding: 4px;
-    }
-    #stream {
-        width: 60vw;
-        height: 70vh;
-        top: 30vh;
-        left: 40vw;
-        padding: 0;
-    }
-    #stream iframe {
-        border: 0;
-        width: 100%;
-        height: 100%;
-    }
-
-    </style>
 </head>
 
 <body>
@@ -117,43 +35,7 @@
     <aside id="stream">
         <p>No stream found.</p>
     </aside>
-    <script>
-        var socket = io.connect('http://' + document.domain + ':' + location.port + '/req');
-
-        var ui = {
-            matchesList: document.getElementById('matches-list'),
-            stream: document.getElementById('stream')
-        }
-        socket.addEventListener('response', function(data) {
-            console.log(data);
-        });
-        socket.addEventListener('data', function(data) {
-            console.log(data);
-
-            ui.matchesList.innerHTML = '';
-
-            for (i = 0; i < data.matches.length; i++) {
-                row = document.createElement('tr');
-                row.innerHTML = '<td>' + data.matches[i].comp_level.toUpperCase() + data.matches[i].match_number + '</td>' +
-                                '<td>' + data.matches[i].teams.red[0] + ', ' +
-                                         data.matches[i].teams.red[1] + ', ' +
-                                         data.matches[i].teams.red[2] + '</td>' +
-                                '<td>' + data.matches[i].teams.blue[0] + ', ' +
-                                         data.matches[i].teams.blue[1] + ', ' +
-                                         data.matches[i].teams.blue[2] + '</td>';
-                ui.matchesList.appendChild(row);
-            }
-
-            // Only replace the stream contents if there's not one there already.
-            // Otherwise, it will delete the stream and restart even if it's being watched.
-            if (!document.querySelector('#stream iframe')) {
-                if (data.webcast[0].type = 'twitch') {
-                    ui.stream.innerHTML =
-                        '<iframe src="http://player.twitch.tv/?' + ((data.webcast[0].file) ? 'video=v'  + data.webcast[0].file : 'channel=' + data.webcast[0].channel) + '" scrolling="no" allowfullscreen="true"></iframe>';
-                }
-            }
-        });
-    </script>
+    <script src="static/javascript/scripts.js"></script>
 </body>
 
 </html>
