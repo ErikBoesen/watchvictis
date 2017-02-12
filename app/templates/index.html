@@ -72,11 +72,6 @@
         top: 50vh;
         left: 50vw;
     }
-    /* TODO: Remove log. Just for debugging ATM. */
-    #log {
-        position: absolute;
-        top: 100vh;
-    }
 
     </style>
 </head>
@@ -92,30 +87,37 @@
         </div>
     </header>
     <aside id="matches-pane">
-        <ul id="matches-list">
-            <li>No matches found.</li>
-        </ul>
+        <table>
+            <tbody id="matches-list">
+                <tr>No matches found.</tr>
+            </tbody>
+        </table>
     </aside>
     <aside id="stream">
         <p>No stream found.</p>
     </aside>
-    <div id="log">
-        <form id="emit">
-            <input type="text" id="emit_data" placeholder="Type here">
-            <input type="submit" value="Emit">
-        </form>
-    </div>
     <script>
         var socket = io.connect('http://' + document.domain + ':' + location.port + '/req');
+
+        var ui = {
+            matchesList: document.getElementById('matches-list')
+        }
         socket.addEventListener('response', function(data) {
-            document.getElementById('log').innerHTML += '<p>Received: ' + JSON.stringify(data) + '</p>';
+            console.log(data);
         });
-        document.querySelector('form#emit').onsubmit = function(event) {
-            socket.emit('data', {
-                data: document.getElementById('emit_data').value
-            });
-            return false;
-        };
+        socket.addEventListener('data', function(data) {
+            console.log(data);
+
+            while (ui.matchesList.hasChildNodes()) {
+                ui.matchesList.removeChild(ui.matchesList.firstChild);
+            }
+            for (i in data.matches) { //= 0; i < data.matches.length; i++) {
+                row = document.createElement('tr');
+                row.innerHTML = '<td>' + i.match_number + '</td>';
+                ui.matchesList.appendChild(row);
+            }
+
+        });
     </script>
 </body>
 
